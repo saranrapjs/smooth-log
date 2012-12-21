@@ -1,0 +1,85 @@
+<html>
+<head>
+<style type="text/css">
+img {
+	max-width: 100%;
+	margin:0 auto;
+	display: block;
+}
+h1 {
+	text-align: center;
+}
+
+body, input, button {
+	font-family: Times;
+}
+
+button {
+	font-size: 14pt;
+	border:0;
+	background: none;
+	cursor:pointer;
+	margin:0 auto;
+	display: block;
+}
+input, pre { 
+	width : 90%;
+	padding : 5px;
+	font-size : 14pt;
+	margin:0 auto;
+	display: block;
+	text-align: center;
+}
+
+
+#queue {
+	text-align : left;
+}
+
+#queue img {
+	margin : 5px;
+}
+
+
+
+</style>
+<script src="/jquery.min.js"></script>
+<script src="/socket.io/socket.io.js"></script>
+<script language="javascript">
+
+var socket = io.connect();
+
+$(document).ready(function () {
+	$('#cmdAdd').click(function () {
+		var request = {};
+		$('#frm').find('input').each(function () {
+			request[this.name] = $(this).val();
+		});
+		$('#cmdAdd').add('#txtURL').attr('disabled', true);
+
+		socket.emit('add', request);
+		return false;
+	});
+
+	socket.on('addResponse', function (data) {
+		$('#txtURL').val('');
+		$('#cmdAdd').add('#txtURL').attr('disabled', false);
+	});
+
+	socket.on('updateStatus', function (data) {
+		$('#status').html(data.message);
+	});
+
+	socket.emit('ready');
+});
+</script>
+</head>
+<body>
+<img src="/log.gif"/>
+<form id="frm">
+	<input placeholder="youtube url" name="url" id="txtURL" />
+	<button id="cmdAdd"><h1>ADD YOUTUBE TO THE LOG</h1></button>
+</form>
+<pre id="status"></pre>
+</body>
+</html>
